@@ -1,7 +1,8 @@
 # Premium Image Gallery
 
+[👉 **Live Demo**](https://code-game-ninja.github.io/Image-Slider/)
+
 A visually stunning, fully responsive, and feature-rich image slider/gallery built with modern HTML, CSS, and JavaScript. Designed for seamless user experience, this project is perfect for portfolios, photography sites, or any web project that needs a premium image showcase.
-👉Live Demo - 
 
 ---
 
