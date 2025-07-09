@@ -91,6 +91,60 @@ const imageDatabase = [
         category: "people",
         title: "Team Meeting",
         description: "Colleagues discussing a project together"
+    },
+    // Animals (new category)
+    {
+        url: "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=1200&h=800&fit=crop",
+        alt: "Dog running in field",
+        category: "animals",
+        title: "Joyful Dog",
+        description: "A happy dog running through a sunny meadow"
+    },
+    {
+        url: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=1200&h=800&fit=crop",
+        alt: "Cat lounging on sofa",
+        category: "animals",
+        title: "Lazy Cat",
+        description: "A relaxed cat enjoying a lazy afternoon"
+    },
+    {
+        url: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=1200&h=800&fit=crop",
+        alt: "Colorful parrot on branch",
+        category: "animals",
+        title: "Tropical Parrot",
+        description: "A vibrant parrot perched on a tree branch"
+    },
+    // More Nature
+    {
+        url: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&h=800&fit=crop",
+        alt: "Lake with mountains",
+        category: "nature",
+        title: "Serene Lake",
+        description: "Crystal clear lake surrounded by mountains"
+    },
+    // More Technology
+    {
+        url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=800&fit=crop",
+        alt: "VR headset user",
+        category: "technology",
+        title: "Virtual Reality",
+        description: "Person experiencing virtual reality technology"
+    },
+    // More Architecture
+    {
+        url: "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?w=1200&h=800&fit=crop",
+        alt: "Bridge at sunset",
+        category: "architecture",
+        title: "Sunset Bridge",
+        description: "A modern bridge illuminated by sunset colors"
+    },
+    // More People
+    {
+        url: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=1200&h=800&fit=crop",
+        alt: "Friends laughing together",
+        category: "people",
+        title: "Good Times",
+        description: "Friends sharing a laugh outdoors"
     }
 ];
 
@@ -106,6 +160,9 @@ let touchEndX = 0;
 let progressInterval;
 let isShuffled = false;
 
+let likedImages = new Set();
+let isDarkMode = false;
+
 // DOM elements
 const sliderImagesContainer = document.getElementById('sliderImages');
 const prevBtn = document.getElementById('prevBtn');
@@ -119,6 +176,9 @@ const fullscreenBtn = document.getElementById('fullscreenBtn');
 const sliderContainer = document.querySelector('.slider-container');
 const progressBar = document.getElementById('progressBar');
 const shuffleBtn = document.getElementById('shuffleBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const likeBtn = document.getElementById('likeBtn');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
 
 /**
  * Initialize the slider when the page loads
@@ -212,6 +272,9 @@ function showImage(index) {
 
         // Reset progress bar
         resetProgressBar();
+
+        // Update like button state
+        updateLikeButton();
 
         console.log(`Showing image ${index + 1}: ${currentImages[index].title}`);
     }
@@ -576,6 +639,46 @@ function addEventListeners() {
     // Shuffle button
     shuffleBtn.addEventListener('click', shuffleImages);
 
+    // Download image button
+    downloadBtn.addEventListener('click', () => {
+        const image = currentImages[currentImageIndex];
+        const link = document.createElement('a');
+        link.href = image.url;
+        link.download = image.title.replace(/\s+/g, '_').toLowerCase() + '.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // Like/Favorite button
+    likeBtn.addEventListener('click', () => {
+        const image = currentImages[currentImageIndex];
+        const key = image.url;
+        if (likedImages.has(key)) {
+            likedImages.delete(key);
+            likeBtn.classList.remove('liked');
+            likeBtn.innerHTML = '<i class="fas fa-heart"></i>';
+        } else {
+            likedImages.add(key);
+            likeBtn.classList.add('liked');
+            likeBtn.innerHTML = '<i class="fas fa-heart"></i> <span style="color:#e25555;">♥</span>';
+        }
+    });
+
+    // Theme toggle button
+    themeToggleBtn.addEventListener('click', () => {
+        isDarkMode = !isDarkMode;
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        sliderContainer.classList.toggle('dark-mode', isDarkMode);
+        document.querySelector('.slider-wrapper').classList.toggle('dark-mode', isDarkMode);
+        document.querySelectorAll('.image-caption').forEach(el => el.classList.toggle('dark-mode', isDarkMode));
+        document.querySelectorAll('.category-btn').forEach(el => el.classList.toggle('dark-mode', isDarkMode));
+        document.querySelectorAll('.control-btn').forEach(el => el.classList.toggle('dark-mode', isDarkMode));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.toggle('dark-mode', isDarkMode));
+        document.querySelectorAll('.thumbnail').forEach(el => el.classList.toggle('dark-mode', isDarkMode));
+        themeToggleBtn.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
+
     // Keyboard navigation
     document.addEventListener('keydown', (event) => {
         // Only respond if not in a text input
@@ -634,6 +737,18 @@ function addEventListeners() {
     });
 
     console.log('Event listeners added');
+}
+
+// Update like button state when image changes
+function updateLikeButton() {
+    const image = currentImages[currentImageIndex];
+    if (likedImages.has(image.url)) {
+        likeBtn.classList.add('liked');
+        likeBtn.innerHTML = '<i class="fas fa-heart"></i> <span style="color:#e25555;">♥</span>';
+    } else {
+        likeBtn.classList.remove('liked');
+        likeBtn.innerHTML = '<i class="fas fa-heart"></i>';
+    }
 }
 
 // Initialize slider when DOM is fully loaded
